@@ -1,9 +1,9 @@
-import {RenderPosition, render } from './render.js';
+import {RenderPosition, render } from './framework/render.js';
 
-import TripInfoView from './view/trip-info-view';
+import TripInfoView from './view/trip-info-view.js';
 import TripFilterView from './view/trip-filter-view.js';
 import BoardPresenter from './presenter/board-presenter.js';
-import PointsModel from '../src/model/points-model.js';
+import PointsModel from './model/points-model.js';
 
 
 const pageHeaderElement = document.querySelector('.page-header');
