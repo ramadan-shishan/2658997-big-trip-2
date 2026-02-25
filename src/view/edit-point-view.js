@@ -1,4 +1,4 @@
-import AbstractView from '../framework/view/abstract-view';
+import AbstractStatefulView from '../framework/view/abstract-stateful-view.js';
 import { TRIP_TYPES } from '../const.js';
 import { humanizeTripDueDate } from '../utils.js';
 
@@ -128,13 +128,15 @@ function createEditPointTemplate(point, destinations, offers) {
                   </button>
                 </header>
                 <section class="event__details">
-                  <section class="event__section  event__section--offers">
+                  ${offersByType.length > 0 ? `
+                    <section class="event__section  event__section--offers">
                     <h3 class="event__section-title  event__section-title--offers">Offers</h3>
 
                     <div class="event__available-offers">
                       ${offersTemplate}
                     </div>
                   </section>
+                  ` : ''}
 
                   <section class="event__section  event__section--destination">
                     <h3 class="event__section-title  event__section-title--destination">Destination</h3>
@@ -151,8 +153,8 @@ function createEditPointTemplate(point, destinations, offers) {
             </li>`;
 }
 
-export default class EditPointView extends AbstractView {
-  #point = null;
+export default class EditPointView extends AbstractStatefulView {
+
   #destinations = null;
   #offers = null;
   #handleFormSubmit = null;
@@ -160,23 +162,46 @@ export default class EditPointView extends AbstractView {
 
   constructor({point, destinations, offers, onFormSubmit, onRollupClick}) {
     super();
+    this._setState(EditPointView.parsePointToState(point));
 
-    this.#point = point;
     this.#destinations = destinations;
     this.#offers = offers;
 
     this.#handleFormSubmit = onFormSubmit;
     this.#handleRollupClick = onRollupClick;
 
+    this._restoreHandlers();
+  }
+
+  _restoreHandlers() {
     this.element.querySelector('form')
       .addEventListener('submit', this.#formSubmitHandler);
-
     this.element.querySelector('.event__rollup-btn')
       .addEventListener('click', this.#rollupClickHandler);
+
+    this.element.querySelector('.event__type-group')
+      .addEventListener('change', this.#typeChangeHandler);
+    this.element.querySelector('.event__input--destination')
+      .addEventListener('change', this.#destinationChangeHandler);
+  }
+
+  static parsePointToState(point) {
+    return {...point};
+  }
+
+  static parseStateToPoint(state) {
+    const point = {...state};
+    return point;
   }
 
   get template() {
-    return createEditPointTemplate(this.#point, this.#destinations, this.#offers);
+    return createEditPointTemplate(this._state, this.#destinations, this.#offers);
+  }
+
+  reset(point) {
+    this.updateElement(
+      EditPointView.parsePointToState(point),
+    );
   }
 
   #formSubmitHandler = (evt) => {
@@ -187,5 +212,29 @@ export default class EditPointView extends AbstractView {
   #rollupClickHandler = (evt) => {
     evt.preventDefault();
     this.#handleRollupClick();
+  };
+
+  #typeChangeHandler = (evt) => {
+    evt.preventDefault();
+
+    this.updateElement({
+      type: evt.target.value,
+      offers: [],
+    });
+  };
+
+  #destinationChangeHandler = (evt) => {
+    evt.preventDefault();
+
+    const name = evt.target.value;
+    const newDestination = this.#destinations.find((item) => item.name === name);
+
+    if (!newDestination) {
+      return;
+    }
+
+    this.updateElement({
+      destination: newDestination.id,
+    });
   };
 }

@@ -192,6 +192,16 @@ export const mockOffers = [
   },
 
   {
+    type: 'check-in',
+    offers: []
+  },
+
+  {
+    type: 'sightseeing',
+    offers: []
+  },
+
+  {
     type: 'restaurant',
     offers: [
       {
