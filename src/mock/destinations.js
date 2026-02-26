@@ -26,19 +26,9 @@ export const mockDestinations = [
 
   {
     id: 'cfe416cq-10xa-ye10-8077-2fs9a01edcac',
-    description: 'Paris, often called the “City of Light” (La Ville Lumière), is the capital of France and one of the world’s most iconic centers for art, fashion, and gastronomy.',
+    description: '',
     name: 'Paris',
-    pictures: [
-      {
-        src: `https://loremflickr.com/248/152?random=${getRandomNumber(1, 20)}`,
-        description: getRandomArrayElement(DESCRIPTIONS)
-      },
-
-      {
-        src: `https://loremflickr.com/248/152?random=${getRandomNumber(1, 20)}`,
-        description: getRandomArrayElement(DESCRIPTIONS)
-      }
-    ]
+    pictures: []
   },
 
   {

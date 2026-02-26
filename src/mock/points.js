@@ -47,7 +47,7 @@ export const mockPoints = [
   {
     id: 'f4b62099-293f-4c3d-a702-94eec4a2808f',
     basePrice: 1100,
-    dateFrom: '2019-07-10T22:55:56.845Z',
+    dateFrom: '2019-03-10T22:55:56.845Z',
     dateTo: '2019-07-11T11:22:13.375Z',
     destination: 'cfe416cq-10xa-ye10-8077-2fs9a01edcae',
     isFavorite: false,
@@ -63,7 +63,7 @@ export const mockPoints = [
   {
     id: 'f4b62099-293f-4c3d-a702-94eec4a2808g',
     basePrice: 800,
-    dateFrom: '2019-08-08T22:55:56.845Z',
+    dateFrom: '2019-05-08T22:55:56.845Z',
     dateTo: '2019-08-09T11:22:13.375Z',
     destination: 'cfe416cq-10xa-ye10-8077-2fs9a01edcaf',
     isFavorite: true,
@@ -79,8 +79,8 @@ export const mockPoints = [
   {
     id: 'f4b62099-293f-4c3d-a702-94eec4a2808h',
     basePrice: 1000,
-    dateFrom: '2019-09-09T22:55:56.845Z',
-    dateTo: '2019-09-10T11:22:13.375Z',
+    dateFrom: '2019-02-10T22:55:56.845Z',
+    dateTo: '2019-02-11T22:55:56.845Z',
     destination: 'cfe416cq-10xa-ye10-8077-2fs9a01edcag',
     isFavorite: false,
     offers: [
