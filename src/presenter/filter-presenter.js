@@ -1,6 +1,7 @@
 import { render, replace, remove } from '../framework/render.js';
 import TripFilterView from '../view/trip-filters-view.js';
 import { UpdateType } from '../const.js';
+import { filter } from '../utils.js';
 
 export default class FilterPresenter {
   #container = null;
@@ -19,7 +20,12 @@ export default class FilterPresenter {
   }
 
   init() {
-    const filters = this.#filterModel.filters;
+    const points = this.#pointModel.points;
+    const filters = this.#filterModel.filters
+      .map((type) => ({
+        type,
+        count: filter[type] (points).length,
+      }));
     const prevFilterComponent = this.#filterComponent;
 
     this.#filterComponent = new TripFilterView({

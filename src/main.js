@@ -1,4 +1,5 @@
-import {RenderPosition, render } from './framework/render.js';
+import {RenderPosition, render, replace, remove } from './framework/render.js';
+import { UpdateType } from './const.js';
 
 import PointModel from './model/point-model.js';
 import FilterModel from './model/filter-model.js';
@@ -53,7 +54,45 @@ const filterPresenter = new FilterPresenter({
 
 filterPresenter.init();
 boardPresenter.init();
+
+let tripInfoComponent = null;
+
+const renderTripInfo = () => {
+  if (pointsModel.destinations.length === 0) {
+    if (tripInfoComponent) {
+      remove(tripInfoComponent);
+      tripInfoComponent = null;
+    }
+    return;
+  }
+
+  const prevInfoComponent = tripInfoComponent;
+
+  tripInfoComponent = new TripInfoView({
+    points: pointsModel.points,
+    destinations: pointsModel.destinations,
+    offers: pointsModel.offers
+  });
+
+  if (prevInfoComponent === null) {
+    render(tripInfoComponent, tripMainElement, RenderPosition.AFTERBEGIN);
+    return;
+  }
+
+  replace(tripInfoComponent, prevInfoComponent);
+  remove(prevInfoComponent);
+};
+
+pointsModel.addObserver((updateType) => {
+  if (updateType !== UpdateType.PATCH) {
+    renderTripInfo();
+  }
+});
+
 pointsModel.init()
+  .catch((err) => {
+    throw err;
+  })
   .finally(() => {
-    render(new TripInfoView(), tripMainElement, RenderPosition.AFTERBEGIN);
+    renderTripInfo();
   });

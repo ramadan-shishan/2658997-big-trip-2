@@ -5,14 +5,6 @@ dayjs.extend(duration);
 
 const padValue = (value) => String(value).padStart(2, '0');
 
-function getRandomNumber(min, max) {
-  return Math.floor(Math.random() * (max - min + 1)) + min;
-}
-
-function getRandomArrayElement(items) {
-  return items[Math.floor(Math.random() * items.length)];
-}
-
 function humanizeTripDueDate(date, format) {
   return date ? dayjs(date).format(format) : '';
 }
@@ -40,6 +32,13 @@ function sortPointDay(pointA, pointB) {
   return dayjs(pointA.dateFrom).diff(dayjs(pointB.dateFrom));
 }
 
+function sortPointTime(pointA, pointB) {
+  const durationA = dayjs(pointA.dateTo).diff(dayjs(pointA.dateFrom));
+  const durationB = dayjs(pointB.dateTo).diff(dayjs(pointB.dateFrom));
+
+  return durationB - durationA;
+}
+
 function sortPointPrice(pointA, pointB) {
   return pointB.basePrice - pointA.basePrice;
 }
@@ -64,11 +63,10 @@ const filter = {
 };
 
 export {
-  getRandomArrayElement,
-  getRandomNumber,
   humanizeTripDueDate,
   getPointDuration,
   sortPointDay,
+  sortPointTime,
   sortPointPrice,
   filter
 };

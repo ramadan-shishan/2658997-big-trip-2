@@ -40,9 +40,9 @@ export default class PointModel extends Observable {
       this.#points = [];
       this.#destinations = [];
       this.#offers = [];
+    } finally {
+      this._notify(UpdateType.INIT);
     }
-
-    this._notify(UpdateType.INIT);
   }
 
   async updatePoint(updateType, update) {

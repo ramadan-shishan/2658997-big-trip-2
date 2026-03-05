@@ -4,10 +4,10 @@ import { humanizeTripDueDate } from '../utils.js';
 import flatpickr from 'flatpickr';
 import 'flatpickr/dist/flatpickr.min.css';
 
-function createTypeItemTemplate (type, currentType) {
+function createTypeItemTemplate (type, currentType, isDisabled) {
   return `
     <div class="event__type-item">
-      <input id="event-type-${type}-1" class="event__type-input  visually-hidden" type="radio" name="event-type" value="${type}" ${type === currentType ? 'checked' : ''}>
+      <input id="event-type-${type}-1" class="event__type-input  visually-hidden" type="radio" name="event-type" value="${type}" ${type === currentType ? 'checked' : ''} ${isDisabled ? 'disabled' : ''}>
       <label class="event__type-label  event__type-label--${type}" for="event-type-${type}-1">${type.charAt(0).toUpperCase() + type.slice(1)}</label>
     </div>
   `;
@@ -21,7 +21,7 @@ function createPictureTemplate(picture) {
   return `<img class="event__photo" src="${picture.src}" alt="${picture.description}">`;
 }
 
-function createOfferTemplate (offer, selectedOffers) {
+function createOfferTemplate (offer, selectedOffers, isDisabled) {
 
   const {id, title, price} = offer;
   const isChecked = selectedOffers.includes(id) ? 'checked' : '';
@@ -29,11 +29,13 @@ function createOfferTemplate (offer, selectedOffers) {
   return `
     <div class="event__offer-selector">
       <input class="event__offer-checkbox visually-hidden"
-             id="event-offer-${id}-1"
+             id="event-offer-${id}"
              type="checkbox"
              name="event-offer-${id}"
-             ${isChecked}>
-      <label class="event__offer-label" for="event-offer-${id}-1">
+             ${isChecked}
+             ${isDisabled ? 'disabled' : ''}
+      >
+      <label class="event__offer-label" for="event-offer-${id}">
         <span class="event__offer-title">${title}</span>
         &plus;&euro;&nbsp;
         <span class="event__offer-price">${price}</span>
@@ -44,7 +46,17 @@ function createOfferTemplate (offer, selectedOffers) {
 
 function createEditPointTemplate(point, destinations, offers) {
 
-  const { type, basePrice, dateFrom, dateTo, destination, offers: selectedOffers } = point;
+  const {
+    type,
+    basePrice,
+    dateFrom,
+    dateTo,
+    destination,
+    offers: selectedOffers,
+    isDisabled,
+    isSaving,
+    isDeleting
+  } = point;
 
   const startDate = humanizeTripDueDate(dateFrom, 'MMMM DD');
   const endDate = humanizeTripDueDate(dateTo, 'MMMM DD');
@@ -55,7 +67,7 @@ function createEditPointTemplate(point, destinations, offers) {
   const offersByType = offers.find((offerItem) => offerItem.type === type)?.offers || [];
 
   const typeItemsTemplate = TRIP_TYPES
-    .map((typeItem) => createTypeItemTemplate(typeItem, type))
+    .map((typeItem) => createTypeItemTemplate(typeItem, type, isDisabled))
     .join('');
 
   const destinationOptionsTemplate = destinations
@@ -67,7 +79,7 @@ function createEditPointTemplate(point, destinations, offers) {
     .join('');
 
   const offersTemplate = offersByType
-    .map((offerItem) => createOfferTemplate(offerItem, selectedOffers))
+    .map((offerItem) => createOfferTemplate(offerItem, selectedOffers, isDisabled))
     .join('');
 
   return `<li class="trip-events__item">
@@ -78,7 +90,7 @@ function createEditPointTemplate(point, destinations, offers) {
                       <span class="visually-hidden">Choose event type</span>
                       <img class="event__type-icon" width="17" height="17" src="img/icons/${type}.png" alt="Event type icon">
                     </label>
-                    <input class="event__type-toggle  visually-hidden" id="event-type-toggle-1" type="checkbox">
+                    <input class="event__type-toggle  visually-hidden" id="event-type-toggle-1" type="checkbox" ${isDisabled ? 'disabled' : ''}>
 
                     <div class="event__type-list">
                       <fieldset class="event__type-group">
@@ -97,6 +109,7 @@ function createEditPointTemplate(point, destinations, offers) {
                            name="event-destination"
                            value="${pointDestination.name || ''}"
                            list="destination-list-1"
+                           ${isDisabled ? 'disabled' : ''}
                     >
                     <datalist id="destination-list-1">
                       ${destinationOptionsTemplate}
@@ -105,10 +118,10 @@ function createEditPointTemplate(point, destinations, offers) {
 
                   <div class="event__field-group  event__field-group--time">
                     <label class="visually-hidden" for="event-start-time-1">From</label>
-                    <input class="event__input  event__input--time" id="event-start-time-1" type="text" name="event-start-time" value="${startDate} ${startTime}">
+                    <input class="event__input  event__input--time" id="event-start-time-1" type="text" name="event-start-time" value="${startDate} ${startTime}" ${isDisabled ? 'disabled' : ''}>
                     &mdash;
                     <label class="visually-hidden" for="event-end-time-1">To</label>
-                    <input class="event__input  event__input--time" id="event-end-time-1" type="text" name="event-end-time" value="${endDate} ${endTime}">
+                    <input class="event__input  event__input--time" id="event-end-time-1" type="text" name="event-end-time" value="${endDate} ${endTime}" ${isDisabled ? 'disabled' : ''}>
                   </div>
 
                   <div class="event__field-group  event__field-group--price">
@@ -120,12 +133,17 @@ function createEditPointTemplate(point, destinations, offers) {
                            id="event-price-1"
                            type="text" name="event-price"
                            value="${basePrice}"
+                           ${isDisabled ? 'disabled' : ''}
                     >
                   </div>
 
-                  <button class="event__save-btn  btn  btn--blue" type="submit">Save</button>
-                  <button class="event__reset-btn" type="reset">Delete</button>
-                  <button class="event__rollup-btn" type="button">
+                  <button class="event__save-btn  btn  btn--blue" type="submit" ${isDisabled ? 'disabled' : ''}>
+                    ${isSaving ? 'Saving...' : 'Save'}
+                  </button>
+                  <button class="event__reset-btn" type="reset" ${isDisabled ? 'disabled' : ''}>
+                    ${isDeleting ? 'Deleting...' : 'Delete'}
+                  </button>
+                  <button class="event__rollup-btn" type="button" ${isDisabled ? 'disabled' : ''}>
                     <span class="visually-hidden">Open event</span>
                   </button>
                 </header>
@@ -201,6 +219,16 @@ export default class EditPointView extends AbstractStatefulView {
   _restoreHandlers() {
     const priceInputElement = this.element.querySelector('.event__input--price');
 
+    if (this.#datepickerFrom) {
+      this.#datepickerFrom.destroy();
+      this.#datepickerFrom = null;
+    }
+
+    if (this.#datepickerTo) {
+      this.#datepickerTo.destroy();
+      this.#datepickerTo = null;
+    }
+
     this.element.querySelector('form')
       .addEventListener('submit', this.#formSubmitHandler);
     this.element.querySelector('.event__rollup-btn')
@@ -211,12 +239,17 @@ export default class EditPointView extends AbstractStatefulView {
 
     this.element.querySelector('.event__type-group')
       .addEventListener('change', this.#typeChangeHandler);
+    this.element.querySelector('.event__available-offers')
+      ?.addEventListener('change', this.#offersChangeHandler);
     this.element.querySelector('.event__input--destination')
       .addEventListener('change', this.#destinationChangeHandler);
 
-    priceInputElement.addEventListener('input', this.#priceInputChangeHandler);
-    priceInputElement.addEventListener('focus', this.#priceFocusHandler);
-    priceInputElement.addEventListener('blur', this.#priceBlurHandler);
+    priceInputElement
+      .addEventListener('input', this.#priceInputChangeHandler);
+    priceInputElement
+      .addEventListener('focus', this.#priceFocusHandler);
+    priceInputElement
+      .addEventListener('blur', this.#priceBlurHandler);
 
     this.#setDatepicker();
   }
@@ -268,11 +301,20 @@ export default class EditPointView extends AbstractStatefulView {
   }
 
   static parsePointToState(point) {
-    return {...point};
+    return {...point,
+      isDisabled: false,
+      isSaving: false,
+      isDeleting: false,
+    };
   }
 
   static parseStateToPoint(state) {
     const point = {...state};
+
+    delete point.isDisabled;
+    delete point.isSaving;
+    delete point.isDeleting;
+
     return point;
   }
 
@@ -288,14 +330,9 @@ export default class EditPointView extends AbstractStatefulView {
 
   #formSubmitHandler = (evt) => {
     evt.preventDefault();
-    const checkedOffers = Array.from(this.element.querySelectorAll('.event__offer-checkbox:checked'));
-    const updatedOffers = checkedOffers.map((offer) =>
-      offer.id.replace('event-offer-', '').replace('-1', '')
-    );
 
-    this._setState({
-      offers: updatedOffers,
-    });
+    const checkedOffers = Array.from(this.element.querySelectorAll('.event__offer-checkbox:checked'));
+    const updatedOffers = checkedOffers.map((offer) => offer.id.replace('event-offer-', ''));
 
     this.#handleFormSubmit(
       EditPointView.parseStateToPoint({
@@ -316,6 +353,17 @@ export default class EditPointView extends AbstractStatefulView {
     this.updateElement({
       type: evt.target.value,
       offers: [],
+    });
+  };
+
+  #offersChangeHandler = (evt) => {
+    evt.preventDefault();
+
+    const checkedOffers = Array.from(this.element.querySelectorAll('.event__offer-checkbox:checked'));
+    const updatedOffers = checkedOffers.map((offer) => offer.id.replace('event-offer-', ''));
+
+    this.updateElement({
+      offers: updatedOffers,
     });
   };
 
