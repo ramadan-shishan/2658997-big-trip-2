@@ -80,7 +80,6 @@ export default class NewPointPresenter {
       UpdateType.MAJOR,
       point,
     );
-    this.destroy();
   };
 
   #handleDeleteClick = () => {

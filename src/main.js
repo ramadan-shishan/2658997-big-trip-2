@@ -9,7 +9,7 @@ import BoardPresenter from './presenter/board-presenter.js';
 import FilterPresenter from './presenter/filter-presenter.js';
 import PointsApiService from './points-api-service.js';
 
-const AUTHORIZATION = 'Basic ramazan0112ts1993';
+const AUTHORIZATION = 'Basic ramazan0112tsc1993';
 const END_POINT = 'https://22.objects.htmlacademy.pro/big-trip';
 
 const pageHeaderElement = document.querySelector('.page-header');
@@ -58,7 +58,7 @@ boardPresenter.init();
 let tripInfoComponent = null;
 
 const renderTripInfo = () => {
-  if (pointsModel.destinations.length === 0) {
+  if (pointsModel.destinations.length === 0 || pointsModel.points.length === 0) {
     if (tripInfoComponent) {
       remove(tripInfoComponent);
       tripInfoComponent = null;
