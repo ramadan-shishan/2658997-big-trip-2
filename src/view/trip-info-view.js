@@ -12,6 +12,10 @@ function createTripInfoTemplate(points, destinations, offers) {
     return total + point.basePrice + selectedOffersCost;
   }, 0);
 
+  if (points.length === 0) {
+    return '<div></div>';
+  }
+
   const sortedPoints = [...points].sort(sortPointDay);
   const routeCities = sortedPoints.map((point) =>
     destinations.find((d) => d.id === point.destination)?.name || ''
